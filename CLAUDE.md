@@ -24,7 +24,7 @@ Status at time of writing: the repo is empty. The sections below describe the in
 
 ## How it runs
 
-The engine is a **one-shot script**, not a daemon. An external scheduler (cron or systemd timer) invokes `python -m icarus_trader` once per weekday ~1 minute after US market open (9:31 ET). Each run:
+The engine is a **one-shot script**, not a daemon. An external scheduler (cron or systemd timer) invokes `python -m icarus_trader` once per weekday ~1 minute after US market open (9:31 ET). Sample systemd units and an env-file template live in `deploy/`. Each run:
 
 1. Checks the kill-switch file.
 2. Asks Alpaca whether a TQQQ buy has already been submitted/filled today; exits idempotently if so.

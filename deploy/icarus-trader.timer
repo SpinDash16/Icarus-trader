@@ -1,0 +1,18 @@
+# Fires icarus-trader.service at 09:31 America/New_York, Mon-Fri.
+# systemd handles EST/EDT automatically via the timezone suffix.
+#
+# Persistent=false is deliberate: per the strategy, if the host was down at
+# 09:31 ET we skip the day rather than submitting a late buy at boot. Tomorrow
+# is the next attempt.
+
+[Unit]
+Description=Run Icarus-trader one minute after US market open on weekdays
+
+[Timer]
+OnCalendar=Mon..Fri 09:31 America/New_York
+Persistent=false
+RandomizedDelaySec=15
+Unit=icarus-trader.service
+
+[Install]
+WantedBy=timers.target

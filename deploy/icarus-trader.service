@@ -1,0 +1,42 @@
+# Icarus-trader systemd service unit.
+#
+# Install:
+#   sudo cp deploy/icarus-trader.service /etc/systemd/system/
+#   sudo cp deploy/icarus-trader.timer   /etc/systemd/system/
+#   sudo cp deploy/icarus-trader.env.example /etc/icarus-trader.env
+#   sudo chmod 600 /etc/icarus-trader.env
+#   sudoedit /etc/icarus-trader.env     # fill in credentials
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now icarus-trader.timer
+#
+# Logs:   journalctl -u icarus-trader -f
+# Next:   systemctl list-timers icarus-trader.timer
+# Halt:   touch /opt/icarus-trader/HALT   (engine refuses to trade while present)
+
+[Unit]
+Description=Icarus-trader: submit a $25 TQQQ buy on Alpaca
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+
+# Adjust User/WorkingDirectory to match your install.
+# Assumes `uv sync` has already been run once inside WorkingDirectory so that
+# .venv/ exists — the service itself does not mutate the checkout.
+User=icarus
+WorkingDirectory=/opt/icarus-trader
+EnvironmentFile=/etc/icarus-trader.env
+ExecStart=/opt/icarus-trader/.venv/bin/python -m icarus_trader
+
+# Modest hardening. Expand if you move the checkout or tighten your host.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectControlGroups=true
+ProtectKernelModules=true
+ProtectKernelTunables=true
+RestrictSUIDSGID=true
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=icarus-trader
